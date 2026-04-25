@@ -1,6 +1,8 @@
 package com.tecabix.bz.tarea;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,8 +32,12 @@ public class Tarea002BZ {
 	    List<UUID> estatus = rqsv049.getEstatus();
 	    List<UUID> prioridad = rqsv049.getPrioridad();
 	    List<UUID> tipoBacklog = rqsv049.getTipoBacklog();
-	    LocalDate fechaMin = rqsv049.getFechaCreacionMin();
-	    LocalDate fechaMax = rqsv049.getFechaCreacionMax();
+	    LocalDate fechaMinInput = rqsv049.getFechaCreacionMin();
+	    LocalDate fechaMaxInput = rqsv049.getFechaCreacionMax();
+	    
+	    LocalDateTime fechaMin = fechaMinInput.atStartOfDay();
+	    LocalDateTime fechaMax = fechaMaxInput.atTime(LocalTime.MAX);
+	    
 	    UUID trabajador = rqsv049.getTrabajador().orElse(null);
 	    if(texto == null) {
 	    	texto = new String();
