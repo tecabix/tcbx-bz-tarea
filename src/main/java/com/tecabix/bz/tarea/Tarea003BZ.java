@@ -55,7 +55,7 @@ public class Tarea003BZ {
 			}
 		}
 		nombres.put(RSA033.RESPONSABLE, nombre);
-		nombres.put(RSA033.ID_RESPONSABLE, persona.getPersona().getClave().toString());
+		nombres.put(RSA033.ID_RESPONSABLE, tarea.getTrabajador().getId().toString());
 
 		Optional<Usuario> usuarioOptional = usuarioRepository.findById(tarea.getIdUsuarioCreador());
 		if (usuarioOptional.isEmpty()) {
