@@ -36,7 +36,7 @@ public class Tarea003BZ {
 	public ResponseEntity<RSB043> detalle(final RQSV050 rqsv050) {
 		RSB043 respose = rqsv050.getRsb043();
 		String ticket = rqsv050.getTicket();
-		long id = Long.parseLong(ticket.replace("TAR-", ""));
+		long id = Long.parseLong(ticket.replace("TASK-", ""));
 
 		Optional<Tarea> tareaOp = tareaRepository.findById(id);
 		if (tareaOp.isEmpty()) {

@@ -50,7 +50,7 @@ public class Tarea005BZ {
 		this.tipoBacklog = tipoBacklog;
 	}
 
-	public ResponseEntity<RSB045> actulizar(final RQSV052 rqsv052) {
+	public ResponseEntity<RSB045> actualizar(final RQSV052 rqsv052) {
 
 		RSB045 rsb045 = rqsv052.getRsb045();
 		Sesion sesion = rqsv052.getSesion();
@@ -154,7 +154,7 @@ public class Tarea005BZ {
 		comentario.setFechaModificado(LocalDateTime.now());
 		comentario.setIdUsuarioModificado(sesion.getUsuario().getId());
 		comentario.setUsuario(usuario);
-		comentario.setIdTarea(tarea.getId()); // porque TareaComentario guarda id_tarea como Long
+		comentario.setIdTarea(tarea.getId());
 		comentario.setEstatus(tarea.getEstatus());
 		tareaComentarioRepository.save(comentario);
 
