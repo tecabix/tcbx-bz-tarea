@@ -6,9 +6,11 @@ import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 
+import com.tecabix.db.entity.Actividad;
 import com.tecabix.db.entity.PersonaFisica;
 import com.tecabix.db.entity.Tarea;
 import com.tecabix.db.entity.Usuario;
+import com.tecabix.db.repository.ActividadRepository;
 import com.tecabix.db.repository.PersonaFisicaRepository;
 import com.tecabix.db.repository.TareaRepository;
 import com.tecabix.db.repository.UsuarioRepository;
@@ -25,13 +27,17 @@ public class Tarea003BZ {
 	private final TareaRepository tareaRepository;
 	private final UsuarioRepository usuarioRepository;
 	private final PersonaFisicaRepository personaFisicaRepository;
+	private final ActividadRepository actividadRepository;
 
 	public Tarea003BZ(TareaRepository tareaRepository, UsuarioRepository usuarioRepository,
-			PersonaFisicaRepository personaFisicaRepository) {
+			PersonaFisicaRepository personaFisicaRepository, ActividadRepository actividadRepository) {
+		super();
 		this.tareaRepository = tareaRepository;
 		this.usuarioRepository = usuarioRepository;
 		this.personaFisicaRepository = personaFisicaRepository;
+		this.actividadRepository = actividadRepository;
 	}
+
 
 	public ResponseEntity<RSB043> detalle(final RQSV050 rqsv050) {
 		RSB043 respose = rqsv050.getRsb043();
@@ -45,7 +51,7 @@ public class Tarea003BZ {
 
 		Tarea tarea = tareaOp.get();
 
-		Map<Byte, String> nombres = new HashMap<Byte, String>();
+		Map<Byte, String> map = new HashMap<Byte, String>();
 
 		PersonaFisica persona = tarea.getTrabajador().getPersonaFisica();
 		String nombre = persona.getNombre();
@@ -54,8 +60,8 @@ public class Tarea003BZ {
 				nombre = nombre + " " + persona.getApellidoPaterno() + " " + persona.getApellidoMaterno();
 			}
 		}
-		nombres.put(RSA033.RESPONSABLE, nombre);
-		nombres.put(RSA033.ID_RESPONSABLE, tarea.getTrabajador().getClave().toString());
+		map.put(RSA033.RESPONSABLE, nombre);
+		map.put(RSA033.ID_RESPONSABLE, tarea.getTrabajador().getClave().toString());
 
 		Optional<Usuario> usuarioOptional = usuarioRepository.findById(tarea.getIdUsuarioCreador());
 		if (usuarioOptional.isEmpty()) {
@@ -75,8 +81,8 @@ public class Tarea003BZ {
 				nombre = nombre + " " + persona.getApellidoPaterno() + " " + persona.getApellidoMaterno();
 			}
 		}
-		nombres.put(RSA033.CREADOR, nombre);
-		nombres.put(RSA033.ID_CREADOR, persona.getPersona().getClave().toString());
+		map.put(RSA033.CREADOR, nombre);
+		map.put(RSA033.ID_CREADOR, persona.getPersona().getClave().toString());
 
 		usuarioOptional = usuarioRepository.findById(tarea.getIdUsuarioModificado());
 		if (usuarioOptional.isEmpty()) {
@@ -96,9 +102,14 @@ public class Tarea003BZ {
 				nombre = nombre + " " + persona.getApellidoPaterno() + " " + persona.getApellidoMaterno();
 			}
 		}
-		nombres.put(RSA033.MODIFICADOR, nombre);
-		nombres.put(RSA033.ID_MODIFICADOR, persona.getPersona().getClave().toString());
-
-		return respose.ok(tarea, nombres);
+		map.put(RSA033.MODIFICADOR, nombre);
+		map.put(RSA033.ID_MODIFICADOR, persona.getPersona().getClave().toString());
+		
+		Actividad actividad = actividadRepository.findByPendiente(tarea.getTrabajador().getId()).orElse(null);
+		if(actividad != null && actividad.getTarea().equals(tarea)) {
+			map.put(RSA033.ACTIVIDAD, actividad.getClave().toString());
+		}
+		
+		return respose.ok(tarea, map);
 	}
 }
