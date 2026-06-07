@@ -13,12 +13,10 @@ import com.tecabix.db.entity.Sesion;
 import com.tecabix.db.entity.Tarea;
 import com.tecabix.db.entity.TareaComentario;
 import com.tecabix.db.entity.Trabajador;
-import com.tecabix.db.entity.Usuario;
 import com.tecabix.db.repository.ProyectoRepository;
 import com.tecabix.db.repository.TareaComentarioRepository;
 import com.tecabix.db.repository.TareaRepository;
 import com.tecabix.db.repository.TrabajadorRepository;
-import com.tecabix.db.repository.UsuarioRepository;
 import com.tecabix.res.b.RSB045;
 import com.tecabix.sv.rq.RQSV052;
 
@@ -32,20 +30,18 @@ public class Tarea005BZ {
 	private final ProyectoRepository proyectoRepository;
 	private final TareaRepository tareaRepository;
 	private final TareaComentarioRepository tareaComentarioRepository;
-	private final UsuarioRepository usuarioRepository;
 
 	private final CatalogoTipo prioridad;
 	private final CatalogoTipo tipoBacklog;
 
 	public Tarea005BZ(TrabajadorRepository trabajadorRepository, ProyectoRepository proyectoRepository,
-			TareaRepository tareaRepository, TareaComentarioRepository tareaComentarioRepository,
-			UsuarioRepository usuarioRepository, CatalogoTipo prioridad, CatalogoTipo tipoBacklog) {
+			TareaRepository tareaRepository, TareaComentarioRepository tareaComentarioRepository, 
+			CatalogoTipo prioridad, CatalogoTipo tipoBacklog) {
 		super();
 		this.trabajadorRepository = trabajadorRepository;
 		this.proyectoRepository = proyectoRepository;
 		this.tareaRepository = tareaRepository;
 		this.tareaComentarioRepository = tareaComentarioRepository;
-		this.usuarioRepository = usuarioRepository;
 		this.prioridad = prioridad;
 		this.tipoBacklog = tipoBacklog;
 	}
@@ -131,6 +127,11 @@ public class Tarea005BZ {
 			}
 			tarea.setProyecto(proyectoOp.get());
 		}
+		
+		Trabajador trabajador = trabajadorRepository.findByClaveUsuario(sesion.getUsuario().getClave()).orElse(null);
+		if(trabajador == null) {
+			return rsb045.notFound("No se encontro el trabjador.");
+		}
 
 		if (cambio.isEmpty()) {
 			return rsb045.badRequest("No hay cambios");
@@ -142,9 +143,6 @@ public class Tarea005BZ {
 		tarea.setFechaModificado(LocalDateTime.now());
 		tareaRepository.save(tarea);
 
-		Usuario usuario = usuarioRepository.findById(sesion.getUsuario().getId())
-				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
 		TareaComentario comentario = new TareaComentario();
 		comentario.setFechaModificado(LocalDateTime.now());
 		comentario.setUsuarioCreador(sesion.getUsuario().getId());
@@ -153,7 +151,7 @@ public class Tarea005BZ {
 		comentario.setFechaCreacion(LocalDateTime.now());
 		comentario.setFechaModificado(LocalDateTime.now());
 		comentario.setIdUsuarioModificado(sesion.getUsuario().getId());
-		comentario.setUsuario(usuario);
+		comentario.setTrabajador(trabajador);
 		comentario.setIdTarea(tarea.getId());
 		comentario.setEstatus(tarea.getEstatus());
 		tareaComentarioRepository.save(comentario);
