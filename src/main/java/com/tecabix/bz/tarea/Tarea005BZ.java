@@ -80,12 +80,6 @@ public class Tarea005BZ {
 			tarea.setTiempoEstimado(rqsv052.getTiempoEstimado());
 		}
 
-		// Tiempo transcurrido
-		if (rqsv052.getTiempoTranscurrido() != tarea.getTiempoTranscurrido()) {
-			cambio.append(", cambio el tiempo transcurrido");
-			tarea.setTiempoTranscurrido(rqsv052.getTiempoTranscurrido());
-		}
-
 		// Prioridad (Catalogo)
 		if (rqsv052.getPrioridad() != null && !rqsv052.getPrioridad().equals(tarea.getPrioridad().getClave())) {
 			cambio.append(", cambio la prioridad");
