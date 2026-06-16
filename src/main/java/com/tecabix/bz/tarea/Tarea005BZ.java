@@ -35,7 +35,7 @@ public class Tarea005BZ {
 	private final CatalogoTipo tipoBacklog;
 
 	public Tarea005BZ(TrabajadorRepository trabajadorRepository, ProyectoRepository proyectoRepository,
-			TareaRepository tareaRepository, TareaComentarioRepository tareaComentarioRepository, 
+			TareaRepository tareaRepository, TareaComentarioRepository tareaComentarioRepository,
 			CatalogoTipo prioridad, CatalogoTipo tipoBacklog) {
 		super();
 		this.trabajadorRepository = trabajadorRepository;
@@ -58,80 +58,130 @@ public class Tarea005BZ {
 
 		Tarea tarea = tareaOp.get();
 
-		StringBuilder builder = new StringBuilder(
-				"El usuario [" + sesion.getUsuario().getNombre() + "|" + sesion.getUsuario().getClave() + "]");
-		StringBuilder cambio = new StringBuilder();
+		StringBuilder comentarioCambio = new StringBuilder();
 
-		// Nombre
 		if (rqsv052.getNombre() != null && !rqsv052.getNombre().equals(tarea.getNombre())) {
-			cambio.append(", cambio el nombre");
+			comentarioCambio.append("Se cambió el nombre de ")
+					.append(tarea.getNombre())
+					.append(" a ")
+					.append(rqsv052.getNombre())
+					.append(". <br/>");
+
 			tarea.setNombre(rqsv052.getNombre());
 		}
 
-		// Descripción
 		if (rqsv052.getDescripcion() != null && !rqsv052.getDescripcion().equals(tarea.getDescripcion())) {
-			cambio.append(", cambio la descripcion");
+			comentarioCambio.append("Se cambió la descripción de ")
+					.append(tarea.getDescripcion())
+					.append(" a ")
+					.append(rqsv052.getDescripcion())
+					.append(". <br/>");
+
 			tarea.setDescripcion(rqsv052.getDescripcion());
 		}
 
-		// Tiempo estimado
 		if (rqsv052.getTiempoEstimado() != tarea.getTiempoEstimado()) {
-			cambio.append(", cambio el tiempo estimado");
+			comentarioCambio.append("Se cambió el tiempo estimado de ")
+					.append(tarea.getTiempoEstimado())
+					.append(" a ")
+					.append(rqsv052.getTiempoEstimado())
+					.append(". <br/>");
+
 			tarea.setTiempoEstimado(rqsv052.getTiempoEstimado());
 		}
 
-		// Prioridad (Catalogo)
 		if (rqsv052.getPrioridad() != null && !rqsv052.getPrioridad().equals(tarea.getPrioridad().getClave())) {
-			cambio.append(", cambio la prioridad");
+
 			Optional<Catalogo> optional = prioridad.getCatalogos().stream()
-					.filter(x -> x.getClave().equals(rqsv052.getPrioridad())).findAny();
+					.filter(x -> x.getClave().equals(rqsv052.getPrioridad()))
+					.findAny();
+
 			if (optional.isEmpty()) {
 				return rsb045.notFound("No se encontro la prioridad a actualizar");
 			}
-			tarea.setPrioridad(optional.get());
+
+			Catalogo prioridadAnterior = tarea.getPrioridad();
+			Catalogo prioridadNueva = optional.get();
+
+			comentarioCambio.append("Se cambió la prioridad de ")
+					.append(prioridadAnterior.getNombre())
+					.append(" a ")
+					.append(prioridadNueva.getNombre())
+					.append(". <br/>");
+
+			tarea.setPrioridad(prioridadNueva);
 		}
 
-		// Tipo backlog (Catalogo)
 		if (rqsv052.getTipoBacklog() != null && !rqsv052.getTipoBacklog().equals(tarea.getTipoBacklog().getClave())) {
-			cambio.append(", cambio el tipo backlog");
+
 			Optional<Catalogo> optional = tipoBacklog.getCatalogos().stream()
-					.filter(x -> x.getClave().equals(rqsv052.getTipoBacklog())).findAny();
+					.filter(x -> x.getClave().equals(rqsv052.getTipoBacklog()))
+					.findAny();
+
 			if (optional.isEmpty()) {
 				return rsb045.notFound("No se encontro el tipo backlog a actualizar");
 			}
-			tarea.setTipoBacklog(optional.get());
+
+			Catalogo tipoBacklogAnterior = tarea.getTipoBacklog();
+			Catalogo tipoBacklogNuevo = optional.get();
+
+			comentarioCambio.append("Se cambió el tipo backlog de ")
+					.append(tipoBacklogAnterior.getNombre())
+					.append(" a ")
+					.append(tipoBacklogNuevo.getNombre())
+					.append(". <br/>");
+
+			tarea.setTipoBacklog(tipoBacklogNuevo);
 		}
 
-		// Responsable (Trabajador)
 		if (rqsv052.getTrabajador() != null && !rqsv052.getTrabajador().equals(tarea.getTrabajador().getClave())) {
-			cambio.append(", cambio el responsable");
+
 			Optional<Trabajador> optionalResponsable = trabajadorRepository.findByClave(rqsv052.getTrabajador());
+
 			if (optionalResponsable.isEmpty()) {
 				return rsb045.notFound("No se encontro el responsable a actualizar");
 			}
-			tarea.setTrabajador(optionalResponsable.get());
+
+			Trabajador responsableAnterior = tarea.getTrabajador();
+			Trabajador responsableNuevo = optionalResponsable.get();
+
+			comentarioCambio.append("Se cambió el responsable de ")
+					.append(responsableAnterior.getPersonaFisica().getNombre())
+					.append(" a ")
+					.append(responsableNuevo.getPersonaFisica().getNombre())
+					.append(". <br/>");
+
+			tarea.setTrabajador(responsableNuevo);
 		}
 
-		// Proyecto
 		if (rqsv052.getProyecto() != null && !rqsv052.getProyecto().equals(tarea.getProyecto().getClave())) {
-			cambio.append(", cambio el proyecto");
+
 			Optional<Proyecto> proyectoOp = proyectoRepository.findByClave(rqsv052.getProyecto());
+
 			if (proyectoOp.isEmpty()) {
 				return rsb045.notFound("No se encontro el proyecto a actualizar");
 			}
-			tarea.setProyecto(proyectoOp.get());
-		}
-		
-		Trabajador trabajador = trabajadorRepository.findByClaveUsuario(sesion.getUsuario().getClave()).orElse(null);
-		if(trabajador == null) {
-			return rsb045.notFound("No se encontro el trabjador.");
+
+			Proyecto proyectoAnterior = tarea.getProyecto();
+			Proyecto proyectoNuevo = proyectoOp.get();
+
+			comentarioCambio.append("Se cambió el proyecto de ")
+					.append(proyectoAnterior.getNombre())
+					.append(" a ")
+					.append(proyectoNuevo.getNombre())
+					.append(". <br/>");
+
+			tarea.setProyecto(proyectoNuevo);
 		}
 
-		if (cambio.isEmpty()) {
+		if (comentarioCambio.isEmpty()) {
 			return rsb045.badRequest("No hay cambios");
 		}
 
-		builder.append(cambio);
+		Trabajador trabajador = trabajadorRepository.findByClaveUsuario(sesion.getUsuario().getClave()).orElse(null);
+		if (trabajador == null) {
+			return rsb045.notFound("No se encontro el trabajador.");
+		}
 
 		tarea.setIdUsuarioModificado(sesion.getUsuario().getId());
 		tarea.setFechaModificado(LocalDateTime.now());
@@ -141,7 +191,7 @@ public class Tarea005BZ {
 		comentario.setFechaModificado(LocalDateTime.now());
 		comentario.setUsuarioCreador(sesion.getUsuario().getId());
 		comentario.setClave(UUID.randomUUID());
-		comentario.setComentario(builder.toString());
+		comentario.setComentario(comentarioCambio.toString().trim());
 		comentario.setFechaCreacion(LocalDateTime.now());
 		comentario.setFechaModificado(LocalDateTime.now());
 		comentario.setIdUsuarioModificado(sesion.getUsuario().getId());
