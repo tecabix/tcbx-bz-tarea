@@ -62,30 +62,30 @@ public class Tarea005BZ {
 
 		if (rqsv052.getNombre() != null && !rqsv052.getNombre().equals(tarea.getNombre())) {
 			comentarioCambio.append("Se cambió el nombre de ")
-					.append(tarea.getNombre())
+					.append("**"+tarea.getNombre()+"**")
 					.append(" a ")
-					.append(rqsv052.getNombre())
-					.append(". <br/>");
+					.append("**"+rqsv052.getNombre()+"**")
+					.append(".\n\n");
 
 			tarea.setNombre(rqsv052.getNombre());
 		}
 
 		if (rqsv052.getDescripcion() != null && !rqsv052.getDescripcion().equals(tarea.getDescripcion())) {
 			comentarioCambio.append("Se cambió la descripción de ")
-					.append(tarea.getDescripcion())
+					.append("**"+tarea.getDescripcion()+"**")
 					.append(" a ")
-					.append(rqsv052.getDescripcion())
-					.append(". <br/>");
+					.append("**"+rqsv052.getDescripcion()+"**")
+					.append(".\n\n");
 
 			tarea.setDescripcion(rqsv052.getDescripcion());
 		}
 
 		if (rqsv052.getTiempoEstimado() != tarea.getTiempoEstimado()) {
 			comentarioCambio.append("Se cambió el tiempo estimado de ")
-					.append(tarea.getTiempoEstimado())
+					.append("**"+tarea.getTiempoEstimado()+"**")
 					.append(" a ")
-					.append(rqsv052.getTiempoEstimado())
-					.append(". <br/>");
+					.append("**"+rqsv052.getTiempoEstimado()+"**")
+					.append(".\n\n");
 
 			tarea.setTiempoEstimado(rqsv052.getTiempoEstimado());
 		}
@@ -102,12 +102,24 @@ public class Tarea005BZ {
 
 			Catalogo prioridadAnterior = tarea.getPrioridad();
 			Catalogo prioridadNueva = optional.get();
+			
+			String prioridadAntes = prioridadAnterior.getNombre()
+			        .toLowerCase()
+                    .replace("_", " ");
+			prioridadAntes = Character.toUpperCase(prioridadAntes.charAt(0))
+                    + prioridadAntes.substring(1);
+			
+			String prioridadActual = prioridadNueva.getNombre()
+                    .toLowerCase()
+                    .replace("_", " ");
+	        prioridadActual = Character.toUpperCase(prioridadActual.charAt(0))
+	                + prioridadActual.substring(1);
 
 			comentarioCambio.append("Se cambió la prioridad de ")
-					.append(prioridadAnterior.getNombre())
+					.append("**"+prioridadAntes+"**")
 					.append(" a ")
-					.append(prioridadNueva.getNombre())
-					.append(". <br/>");
+					.append("**"+prioridadActual+"**")
+					.append(".\n\n");
 
 			tarea.setPrioridad(prioridadNueva);
 		}
@@ -126,10 +138,10 @@ public class Tarea005BZ {
 			Catalogo tipoBacklogNuevo = optional.get();
 
 			comentarioCambio.append("Se cambió el tipo backlog de ")
-					.append(tipoBacklogAnterior.getNombre())
+					.append("**"+tipoBacklogAnterior.getNombre()+"**")
 					.append(" a ")
-					.append(tipoBacklogNuevo.getNombre())
-					.append(". <br/>");
+					.append("**"+tipoBacklogNuevo.getNombre()+"**")
+					.append(".\n\n");
 
 			tarea.setTipoBacklog(tipoBacklogNuevo);
 		}
@@ -146,10 +158,10 @@ public class Tarea005BZ {
 			Trabajador responsableNuevo = optionalResponsable.get();
 
 			comentarioCambio.append("Se cambió el responsable de ")
-					.append(responsableAnterior.getPersonaFisica().getNombre())
+					.append("**"+responsableAnterior.getPersonaFisica().getNombre()+"**")
 					.append(" a ")
-					.append(responsableNuevo.getPersonaFisica().getNombre())
-					.append(". <br/>");
+					.append("**"+responsableNuevo.getPersonaFisica().getNombre()+"**")
+					.append(".\n\n");
 
 			tarea.setTrabajador(responsableNuevo);
 		}
@@ -179,10 +191,10 @@ public class Tarea005BZ {
              }
 
 			comentarioCambio.append("Se cambió el proyecto de ")
-					.append(proyectoAnterior.getNombre())
+					.append("**"+proyectoAnterior.getNombre()+"**")
 					.append(" a ")
-					.append(proyectoNuevo.getNombre())
-					.append(". <br/>");
+					.append("**"+proyectoNuevo.getNombre()+"**")
+					.append(".\n\n");
 
 			tarea.setProyecto(proyectoNuevo);
 		}

@@ -136,10 +136,18 @@ public class Tarea004BZ {
 			return rsb044.notFound("No se encontro el trabjador.");
 		}
 
-		String estatusViejo = tarea.getEstatus().getNombre();
+		String estatusViejo = tarea.getEstatus().getNombre()
+		        .toLowerCase()
+	            .replace("_", " ");
+		estatusViejo = Character.toUpperCase(estatusViejo.charAt(0))
+	                    + estatusViejo.substring(1);
 
 		tarea.setEstatus(estatus);
-		String estatusNuevo = tarea.getEstatus().getNombre();
+		String estatusNuevo = tarea.getEstatus().getNombre()
+                .toLowerCase()
+                .replace("_", " ");
+		estatusNuevo = Character.toUpperCase(estatusNuevo.charAt(0))
+                        + estatusNuevo.substring(1);
 
 		tarea.setIdUsuarioModificado(sesion.getUsuario().getId());
 		tarea.setFechaModificado(LocalDateTime.now());
@@ -149,10 +157,10 @@ public class Tarea004BZ {
 		TareaComentario comentario = new TareaComentario();
 
 		comentario.setClave(UUID.randomUUID());
-		comentario.setComentario("Se cambio el estatus de " 
+		comentario.setComentario("Se cambio el estatus de **"
 				+ estatusViejo 
-				+ " a " 
-				+ estatusNuevo + ".");
+				+ "** a **"
+				+ estatusNuevo + "**.");
 
 		comentario.setFechaCreacion(LocalDateTime.now());
 		comentario.setFechaModificado(LocalDateTime.now());
