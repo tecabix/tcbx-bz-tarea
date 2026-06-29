@@ -65,6 +65,21 @@ public class Tarea001BZ {
 		if(proyectoOP.isEmpty()) {
 			return response.notFound("No se encontro el proyecto");
 		}
+
+		boolean existeTarea = tareaRepository.findAll()
+	        .stream()
+	        .anyMatch(x ->
+	            x.getProyecto() != null
+	            && x.getProyecto().getClave().equals(rqsv048.getProyectoId())
+	            && x.getNombre() != null
+	            && x.getNombre().equalsIgnoreCase(rqsv048.getNombre())
+	        );
+
+	    if (existeTarea) {
+	        return response.badRequest(
+	            "Ya existe una tarea con ese nombre en el proyecto");
+	    }
+
 		tarea.setProyecto(proyectoOP.get());
 		Optional<Catalogo> tipoBacklogOP = tipoBacklog.getCatalogos().stream().filter(x->x.getClave().equals(rqsv048.getTipoBacklogId())).findAny();
 		if(tipoBacklogOP.isEmpty()) {
