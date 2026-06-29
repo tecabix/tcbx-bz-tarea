@@ -173,6 +173,20 @@ public class Tarea005BZ {
 
 			tarea.setProyecto(proyectoNuevo);
 		}
+		
+		boolean existeTarea = tareaRepository.findAll()
+	        .stream()
+            .anyMatch(x ->
+                x.getProyecto() != null
+                && x.getProyecto().getClave().equals(rqsv052.getProyecto())
+                && x.getNombre() != null
+                && x.getNombre().equalsIgnoreCase(rqsv052.getNombre())
+            );
+    
+        if (existeTarea) {
+            return rsb045.badRequest(
+                "Ya existe una tarea con ese nombre en el proyecto.");
+        }
 
 		if (comentarioCambio.isEmpty()) {
 			return rsb045.badRequest("No hay cambios");

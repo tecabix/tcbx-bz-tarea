@@ -77,7 +77,7 @@ public class Tarea001BZ {
 
 	    if (existeTarea) {
 	        return response.badRequest(
-	            "Ya existe una tarea con ese nombre en el proyecto");
+	            "Ya existe una tarea con ese nombre en el proyecto.");
 	    }
 
 		tarea.setProyecto(proyectoOP.get());
