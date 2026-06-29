@@ -10,10 +10,11 @@ import com.tecabix.db.entity.Catalogo;
 import com.tecabix.db.entity.Sesion;
 import com.tecabix.db.entity.Tarea;
 import com.tecabix.db.entity.TareaComentario;
-import com.tecabix.db.entity.Usuario;
+import com.tecabix.db.entity.Trabajador;
 import com.tecabix.db.repository.CatalogoRepository;
 import com.tecabix.db.repository.TareaComentarioRepository;
 import com.tecabix.db.repository.TareaRepository;
+import com.tecabix.db.repository.TrabajadorRepository;
 import com.tecabix.res.b.RSB044;
 import com.tecabix.sv.rq.RQSV051;
 
@@ -26,6 +27,7 @@ public class Tarea004BZ {
 	private final CatalogoRepository catalogoRepository;
 	private final TareaRepository tareaRepository;
 	private final TareaComentarioRepository tareaComentarioRepository;
+	private final TrabajadorRepository trabajadorRepository;
 
 	private final Catalogo porHacer;
 	private final Catalogo enProceso;
@@ -35,20 +37,18 @@ public class Tarea004BZ {
 	private final Catalogo bloqueado;
 	private final Catalogo conObservaciones;
 
-	private Usuario usuario;
-
 	public Tarea004BZ(
 			CatalogoRepository catalogoRepository,
 			TareaRepository tareaRepository,
-			TareaComentarioRepository tareaComentarioRepository,
+			TareaComentarioRepository tareaComentarioRepository, 
+			TrabajadorRepository trabajadorRepository,
 			Catalogo porHacer,
 			Catalogo enProceso,
 			Catalogo enRevision,
 			Catalogo listo,
 			Catalogo enPausa,
 			Catalogo bloqueado,
-			Catalogo conObservaciones,
-			Usuario usuario) {
+			Catalogo conObservaciones) {
 
 		this.catalogoRepository = catalogoRepository;
 		this.tareaRepository = tareaRepository;
@@ -60,7 +60,7 @@ public class Tarea004BZ {
 		this.enPausa = enPausa;
 		this.bloqueado = bloqueado;
 		this.conObservaciones = conObservaciones;
-		this.usuario = usuario;
+		this.trabajadorRepository = trabajadorRepository;
 	}
 
 	public ResponseEntity<RSB044> actualizarEstatus(final RQSV051 rqsv051) {
@@ -131,6 +131,11 @@ public class Tarea004BZ {
 			return rsb044.badRequest("No se puede cambiar el estatus.");
 		}
 
+		Trabajador trabajador = trabajadorRepository.findByClaveUsuario(sesion.getUsuario().getClave()).orElse(null);
+		if(trabajador == null) {
+			return rsb044.notFound("No se encontro el trabjador.");
+		}
+
 		String estatusViejo = tarea.getEstatus().getNombre();
 
 		tarea.setEstatus(estatus);
@@ -144,11 +149,7 @@ public class Tarea004BZ {
 		TareaComentario comentario = new TareaComentario();
 
 		comentario.setClave(UUID.randomUUID());
-		comentario.setComentario("El usuario [" 
-				+ sesion.getUsuario().getNombre() 
-				+ "|" 
-				+ sesion.getUsuario().getClave() 
-				+ "] cambio el estatus de " 
+		comentario.setComentario("Se cambio el estatus de " 
 				+ estatusViejo 
 				+ " a " 
 				+ estatusNuevo + ".");
@@ -156,7 +157,7 @@ public class Tarea004BZ {
 		comentario.setFechaCreacion(LocalDateTime.now());
 		comentario.setFechaModificado(LocalDateTime.now());
 
-		comentario.setUsuario(usuario);
+		comentario.setTrabajador(trabajador);
 		comentario.setIdTarea(tarea.getId());
 
 		comentario.setUsuarioCreador(sesion.getUsuario().getId());
